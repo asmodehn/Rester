@@ -65,6 +65,17 @@ class TestCaseExec(object):
                 params[key] = self.case.variables.expand(value)
         return params
 
+    def _build_data_dict(self, test_step):
+        data = {}
+        if hasattr(test_step, 'payload') and test_step.payload is not None:
+            print "PAYLOAD %r", test_step.payload
+            print "PAYLOAD ITEMS %r", test_step.payload.items()
+            for key, value in test_step.payload.items():
+                print "KEY %r", key
+                print "VALUE %r", value
+                data[key] = self.case.variables.expand(value)
+        return data
+
     def _execute_test_step(self, test_step):
         http_client = HttpClient(**self.case.request_opts)
         failures = Failure([], None)
@@ -83,9 +94,13 @@ class TestCaseExec(object):
             # process and set up params
             params = self._build_param_dict(test_step)
 
+            # process and set up data
+            data = self._build_data_dict(test_step)
+
             url = self.case.variables.expand(test_step.apiUrl)
             self.logger.debug('Evaluated URL : %s', url)
-            response_wrapper = http_client.request(url, method, headers, params, is_raw)
+            self.logger.debug('Sending Data : %s', data)
+            response_wrapper = http_client.request(url, method, headers, params, data, is_raw)
 
             # expected_status = getattr(getattr(test_step, 'asserts'), 'status', 200)
             # if response_wrapper.status != expected_status:
