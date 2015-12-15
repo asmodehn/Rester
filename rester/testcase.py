@@ -3,6 +3,7 @@ from rester.exc import TestCaseExec
 from rester.http import HttpClient
 from rester.loader import TestSuite, TestCase
 import yaml
+import jsonpickle
 
 class bcolors:
     HEADER = '\033[95m'
@@ -26,7 +27,14 @@ class ApiTestCaseRunner:
             self._run_case(test_case)
 
     def run_test_case(self, test_case_file):
-        case = TestCase(None, test_case_file)
+        tc = TestCase(None)
+        tcenc = jsonpickle.encode(tc)
+        with open(test_case_file) as fh:
+            if test_case_file.endswith(".yaml"):
+                # TODO : probably need to replace that with a custom backend for json pickle since YAML is JSON
+                return yaml.load(fh.read())
+            case = jsonpickle.decode(fh.read())
+        case.filename = test_case_file
         self._run_case(case)
 
     def _run_case(self, case):

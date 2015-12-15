@@ -26,7 +26,7 @@ class TestCaseExec(object):
 
         for step in self.case.steps:
             self.logger.debug('Test Step Name : %s', step.name)
-            if step.get('skip', False):
+            if step.skip:
                 self.logger.info('\n=======> Skipping test case : ' + step.name)
                 self.skipped.append(step)
                 continue
@@ -61,7 +61,7 @@ class TestCaseExec(object):
     def _build_param_dict(self, test_step):
         params = {}
         if hasattr(test_step, 'params') and test_step.params is not None:
-            for key, value in test_step.params.items().items():
+            for key, value in test_step.params.iteritems():
                 params[key] = self.case.variables.expand(value)
         return params
 
@@ -77,7 +77,7 @@ class TestCaseExec(object):
             headers = {}
             if hasattr(test_step, 'headers') and test_step.headers is not None:
                 self.logger.debug('Found Headers')
-                for key, value in test_step.headers.items().items():
+                for key, value in test_step.headers.iteritems():
                     headers[key] = self.case.variables.expand(value)
 
             # process and set up params
@@ -139,7 +139,7 @@ class TestCaseExec(object):
             if value in json_types:
                 self.logger.info('Found json type : %s ', value)
 
-                if type(json_eval_expr) == DictWrapper:
+                if type(json_eval_expr) == dict:
                     value = 'Object'
                     json_eval_expr = {}
 

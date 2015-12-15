@@ -1,3 +1,4 @@
 {
+   "py/object":"rester.TestSuite",
    "test_cases":["tests/weather.json"]
 }

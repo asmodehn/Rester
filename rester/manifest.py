@@ -13,23 +13,23 @@ class Variables(object):
     _pattern = re.compile(r'\{(\w+)\}')
 
     def __init__(self, variables=None):
-        self._variables = variables or {}
+        self.variables = variables or {}
 
     def __iter__(self):
-        for k, v in self._variables.iteritems():
+        for k, v in self.variables.iteritems():
             yield k, v
 
     def get(self, k, default):
-        return self._variables.get(k, default)
+        return self.variables.get(k, default)
 
     def update(self, values):
         for k, v in values:
             self.add_variable(k, v)
 
     def add_variable(self, key, value):
-        if self._variables.get(key, ''):
+        if self.variables.get(key, ''):
             self.logger.warn('WARN!!! Variable : %s Already defined!!!', key)
-        self._variables[key] = self.expand(value)
+        self.variables[key] = self.expand(value)
 
     def expand(self, expression):
         """Expands logical constructions."""
@@ -37,7 +37,7 @@ class Variables(object):
         if not is_string(expression):
             return expression
 
-        result = self._pattern.sub(lambda var: str(self._variables[var.group(1)]), expression)
+        result = self._pattern.sub(lambda var: str(self.variables[var.group(1)]), expression)
 
         result = result.strip()
         self.logger.debug('expand : %s - result : %s', expression, result)
